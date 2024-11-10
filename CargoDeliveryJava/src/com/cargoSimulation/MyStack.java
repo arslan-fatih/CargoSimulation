@@ -4,6 +4,7 @@ package com.cargoSimulation;
  * --------------------------------------------------------
  * Summary: Represents a last-in-first-out (LIFO) stack of objects.
  * Uses a doubly linked list as the underlying data structure.
+ * Does not use iterators.
  * --------------------------------------------------------
  */
 public class MyStack<T> {
@@ -77,12 +78,12 @@ public class MyStack<T> {
 
     /**
      * --------------------------------------------------------
-     * Summary: Returns an iterator over the elements in this stack.
+     * Summary: Returns an array containing all of the elements in this stack.
      * Precondition: None.
-     * Postcondition: Returns an iterator over the stack elements.
+     * Postcondition: Returns an array of stack elements.
      * --------------------------------------------------------
      */
-    public java.util.Iterator<T> iterator() {
-        return list.iterator();
+    public Object[] toArray() {
+        return list.toArray();
     }
 }

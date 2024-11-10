@@ -1,17 +1,13 @@
 package com.cargoSimulation;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
+import java.io.*;
+import java.util.ArrayList;
 
 /**
  * --------------------------------------------------------
  * Summary: Main class for the cargo simulation program.
  * Reads input files, processes missions, and writes the results to an output file.
+ * Does not use iterators.
  * --------------------------------------------------------
  */
 public class Main {
@@ -27,7 +23,7 @@ public class Main {
         String missionsFile = args[3];
         String resultFile = args[4];
 
-        Map<String, City> cities = new HashMap<>();
+        ArrayList<City> cities = new ArrayList<>();
         try {
             readCities(citiesFile, cities);
             readPackages(packagesFile, cities);
@@ -41,18 +37,18 @@ public class Main {
 
     /**
      * --------------------------------------------------------
-     * Summary: Reads city names from the file and adds them to the cities map.
+     * Summary: Reads city names from the file and adds them to the cities list.
      * Precondition: filename is a valid file path; cities is not null.
-     * Postcondition: cities map is populated with city names as keys and City objects as values.
+     * Postcondition: cities list is populated with City objects.
      * --------------------------------------------------------
      */
-    public static void readCities(String filename, Map<String, City> cities) throws IOException {
+    public static void readCities(String filename, ArrayList<City> cities) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
         while ((line = br.readLine()) != null) {
             String cityName = line.trim();
             if (!cityName.isEmpty()) {
-                cities.put(cityName, new City(cityName));
+                cities.add(new City(cityName));
             }
         }
         br.close();
@@ -60,12 +56,29 @@ public class Main {
 
     /**
      * --------------------------------------------------------
+     * Summary: Finds a city in the list by its name.
+     * Precondition: cities list is populated; cityName is not null.
+     * Postcondition: Returns the City object with the matching name or null if not found.
+     * --------------------------------------------------------
+     */
+    public static City findCityByName(ArrayList<City> cities, String cityName) {
+        for (int i = 0; i < cities.size(); i++) {
+            City city = cities.get(i);
+            if (city.getName().equals(cityName)) {
+                return city;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * --------------------------------------------------------
      * Summary: Reads packages from the file and adds them to the respective city's distribution center.
-     * Precondition: filename is a valid file path; cities map is populated.
+     * Precondition: filename is a valid file path; cities list is populated.
      * Postcondition: Packages are added to the corresponding city's package stack.
      * --------------------------------------------------------
      */
-    public static void readPackages(String filename, Map<String, City> cities) throws IOException {
+    public static void readPackages(String filename, ArrayList<City> cities) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
         while ((line = br.readLine()) != null) {
@@ -75,7 +88,7 @@ public class Main {
                 String cityName = parts[1];
 
                 Package pkg = new Package(packageId, cityName);
-                City city = cities.get(cityName);
+                City city = findCityByName(cities, cityName);
                 if (city != null) {
                     city.getDistributionCenter().getPackages().push(pkg);
                 } else {
@@ -89,11 +102,11 @@ public class Main {
     /**
      * --------------------------------------------------------
      * Summary: Reads vehicles from the file and adds them to the respective city's distribution center.
-     * Precondition: filename is a valid file path; cities map is populated.
+     * Precondition: filename is a valid file path; cities list is populated.
      * Postcondition: Vehicles are added to the corresponding city's vehicle queue.
      * --------------------------------------------------------
      */
-    public static void readVehicles(String filename, Map<String, City> cities) throws IOException {
+    public static void readVehicles(String filename, ArrayList<City> cities) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
         while ((line = br.readLine()) != null) {
@@ -104,7 +117,7 @@ public class Main {
                 double volume = Double.parseDouble(parts[2]);
 
                 Vehicle vehicle = new Vehicle(vehicleId, volume);
-                City city = cities.get(cityName);
+                City city = findCityByName(cities, cityName);
                 if (city != null) {
                     city.getDistributionCenter().getVehicles().enqueue(vehicle);
                 } else {
@@ -118,11 +131,11 @@ public class Main {
     /**
      * --------------------------------------------------------
      * Summary: Processes the missions from the file.
-     * Precondition: filename is a valid file path; cities map is populated.
+     * Precondition: filename is a valid file path; cities list is populated.
      * Postcondition: Missions are executed, affecting the state of cities, vehicles, and packages.
      * --------------------------------------------------------
      */
-    public static void processMissions(String filename, Map<String, City> cities) throws IOException {
+    public static void processMissions(String filename, ArrayList<City> cities) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
         while ((line = br.readLine()) != null) {
@@ -148,16 +161,36 @@ public class Main {
 
     /**
      * --------------------------------------------------------
+     * Summary: Sorts an array of integers in descending order using bubble sort.
+     * Precondition: indices array is not null.
+     * Postcondition: indices array is sorted in descending order.
+     * --------------------------------------------------------
+     */
+    public static void sortIndicesDescending(int[] indices) {
+        int n = indices.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (indices[j] < indices[j + 1]) {
+                    int temp = indices[j];
+                    indices[j] = indices[j + 1];
+                    indices[j + 1] = temp;
+                }
+            }
+        }
+    }
+
+    /**
+     * --------------------------------------------------------
      * Summary: Executes a single mission based on the provided parameters.
-     * Precondition: cities map is populated; city names are valid; dropOffIndices are valid integers.
+     * Precondition: cities list is populated; city names are valid; dropOffIndices are valid integers.
      * Postcondition: The mission is executed, affecting the state of involved cities, vehicles, and packages.
      * --------------------------------------------------------
      */
-    public static void executeMission(Map<String, City> cities, String sourceCityName, String middleCityName,
+    public static void executeMission(ArrayList<City> cities, String sourceCityName, String middleCityName,
                                       String destCityName, int a, int b, String[] dropOffIndices) {
-        City sourceCity = cities.get(sourceCityName);
-        City middleCity = cities.get(middleCityName);
-        City destCity = cities.get(destCityName);
+        City sourceCity = findCityByName(cities, sourceCityName);
+        City middleCity = findCityByName(cities, middleCityName);
+        City destCity = findCityByName(cities, destCityName);
 
         if (sourceCity == null || middleCity == null || destCity == null) {
             System.err.println("One or more cities not found in mission.");
@@ -198,14 +231,13 @@ public class Main {
         }
 
         // 4. Drop off specified packages at the middle city
-        // Indices need to be sorted in descending order
         int[] indices = new int[dropOffIndices.length];
         for (int i = 0; i < dropOffIndices.length; i++) {
             indices[i] = Integer.parseInt(dropOffIndices[i]);
         }
-        java.util.Arrays.sort(indices);
+        sortIndicesDescending(indices);
 
-        for (int i = indices.length - 1; i >= 0; i--) {
+        for (int i = 0; i < indices.length; i++) {
             int index = indices[i];
             Package pkg = vehicle.getCargoPackages().removeAt(index);
             if (pkg != null) {
@@ -215,68 +247,51 @@ public class Main {
             }
         }
 
-        // 5. Deliver the vehicle and remaining packages to the destination city
-        destDC.getVehicles().enqueue(vehicle);
-
+        // 5. Continue to the destination and drop off remaining packages
         while (!vehicle.getCargoPackages().isEmpty()) {
-            Package pkg = vehicle.getCargoPackages().removeFirst();
-            destDC.getPackages().push(pkg);
+            Package pkg = vehicle.getCargoPackages().pop();
+            if (pkg != null) {
+                destDC.getPackages().push(pkg);
+            }
         }
+
+        // 6. Return vehicle to destination city
+        destDC.getVehicles().enqueue(vehicle);
     }
 
     /**
      * --------------------------------------------------------
-     * Summary: Writes the final state of each city to the output file.
-     * Precondition: filename is a valid file path; cities map is populated.
-     * Postcondition: Output file is created with the current state of cities.
+     * Summary: Writes the simulation results to the specified output file.
+     * Precondition: filename is a valid file path; cities list is populated.
+     * Postcondition: Results are written to the output file.
      * --------------------------------------------------------
      */
-    public static void writeResults(String filename, Map<String, City> cities) throws IOException {
+    public static void writeResults(String filename, ArrayList<City> cities) throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+        for (City city : cities) {
+            DistributionCenter dc = city.getDistributionCenter();
+            bw.write(city.getName() + ":\n");
 
-        for (City city : cities.values()) {
-            bw.write(city.getName());
-            bw.newLine();
-            bw.write("Packages:");
-            bw.newLine();
-
-            MyStack<Package> packages = city.getDistributionCenter().getPackages();
-            if (!packages.isEmpty()) {
-                MyStack<Package> tempStack = new MyStack<>();
-                while (!packages.isEmpty()) {
-                    Package pkg = packages.pop();
-                    bw.write(pkg.getId());
-                    bw.newLine();
-                    tempStack.push(pkg);
-                }
-                while (!tempStack.isEmpty()) {
-                    packages.push(tempStack.pop());
-                }
-            } else {
-                bw.write("No packages");
-                bw.newLine();
+            // Write vehicles in the city's distribution center
+            bw.write("  Vehicles: ");
+            Vehicle vehicle = dc.getVehicles().peek();
+            while (vehicle != null) {
+                bw.write(vehicle.getId() + " ");
+                dc.getVehicles().dequeue();
+                vehicle = dc.getVehicles().peek();
             }
+            bw.write("\n");
 
-            bw.write("Vehicles:");
-            bw.newLine();
-            MyQueue<Vehicle> vehicles = city.getDistributionCenter().getVehicles();
-            if (!vehicles.isEmpty()) {
-                MyQueue<Vehicle> tempQueue = new MyQueue<>();
-                while (!vehicles.isEmpty()) {
-                    Vehicle vehicle = vehicles.dequeue();
-                    bw.write(vehicle.getId());
-                    bw.newLine();
-                    tempQueue.enqueue(vehicle);
-                }
-                while (!tempQueue.isEmpty()) {
-                    vehicles.enqueue(tempQueue.dequeue());
-                }
-            } else {
-                bw.write("No vehicles");
-                bw.newLine();
+            // Write packages in the city's distribution center
+            bw.write("  Packages: ");
+            Package pkg = dc.getPackages().peek();
+            while (pkg != null) {
+                bw.write(pkg.getId() + " ");
+                dc.getPackages().pop();
+                pkg = dc.getPackages().peek();
             }
+            bw.write("\n");
         }
-
         bw.close();
     }
 }

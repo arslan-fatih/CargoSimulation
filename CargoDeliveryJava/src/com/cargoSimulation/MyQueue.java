@@ -4,6 +4,7 @@ package com.cargoSimulation;
  * --------------------------------------------------------
  * Summary: Represents a first-in-first-out (FIFO) queue of objects.
  * Uses a doubly linked list as the underlying data structure.
+ * Does not use iterators.
  * --------------------------------------------------------
  */
 public class MyQueue<T> {
@@ -77,12 +78,12 @@ public class MyQueue<T> {
 
     /**
      * --------------------------------------------------------
-     * Summary: Returns an iterator over the elements in this queue.
+     * Summary: Returns an array containing all of the elements in this queue.
      * Precondition: None.
-     * Postcondition: Returns an iterator over the queue elements.
+     * Postcondition: Returns an array of queue elements.
      * --------------------------------------------------------
      */
-    public java.util.Iterator<T> iterator() {
-        return list.iterator();
+    public Object[] toArray() {
+        return list.toArray();
     }
 }

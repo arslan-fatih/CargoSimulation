@@ -4,6 +4,7 @@ package com.cargoSimulation;
  * --------------------------------------------------------
  * Summary: Represents a generic doubly linked list.
  * Provides methods to add, remove, and access elements from both ends and at specific positions.
+ * Does not use iterators.
  * --------------------------------------------------------
  */
 public class DoublyLinkedList<T> {
@@ -49,6 +50,8 @@ public class DoublyLinkedList<T> {
         tail = null;
         size = 0;
     }
+    
+    
 
     /**
      * --------------------------------------------------------
@@ -57,6 +60,19 @@ public class DoublyLinkedList<T> {
      * Postcondition: The element is added at the front of the list.
      * --------------------------------------------------------
      */
+    
+    /**
+     * --------------------------------------------------------
+     * Summary: Removes and returns the last element of the list (behaves like a stack's pop).
+     * Precondition: The list is not empty.
+     * Postcondition: The last element is removed and returned; size is decrement.
+     * --------------------------------------------------------
+     */
+    
+    public T pop() {
+    	return removeLast();
+    }
+    
     public void addFirst(T data) {
         Node newNode = new Node(data);
         if (isEmpty()) {
@@ -227,38 +243,19 @@ public class DoublyLinkedList<T> {
 
     /**
      * --------------------------------------------------------
-     * Summary: Returns an iterator over the elements in this list.
+     * Summary: Returns an array containing all of the elements in this list.
      * Precondition: None.
-     * Postcondition: Returns an iterator starting at the head of the list.
+     * Postcondition: Returns an array of list elements.
      * --------------------------------------------------------
      */
-    public java.util.Iterator<T> iterator() {
-        return new java.util.Iterator<T>() {
-            private Node current = head;
-
-            /**
-             * --------------------------------------------------------
-             * Summary: Checks if there is a next element in the iteration.
-             * Precondition: None.
-             * Postcondition: Returns true if there is a next element, false otherwise.
-             * --------------------------------------------------------
-             */
-            public boolean hasNext() {
-                return current != null;
-            }
-
-            /**
-             * --------------------------------------------------------
-             * Summary: Returns the next element in the iteration.
-             * Precondition: hasNext() returns true.
-             * Postcondition: Returns the next element and advances the iterator.
-             * --------------------------------------------------------
-             */
-            public T next() {
-                T data = current.data;
-                current = current.next;
-                return data;
-            }
-        };
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+        Node current = head;
+        int index = 0;
+        while (current != null) {
+            array[index++] = current.data;
+            current = current.next;
+        }
+        return array;
     }
 }
