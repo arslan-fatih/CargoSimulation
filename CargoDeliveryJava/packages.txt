@@ -1,0 +1,13 @@
+P1 Berlin
+P2 Hamburg
+P3 Cologne
+P4 Berlin
+P5 Hamburg
+P6 Cologne
+P7 Cologne
+P8 Hamburg
+P9 Hamburg
+P10 Frankfurt
+P11 Dusseldorf
+P12 Dusseldorf
+P13 Dusseldorf

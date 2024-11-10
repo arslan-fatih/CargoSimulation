@@ -1,0 +1,5 @@
+V1 Berlin 7.1
+V2 Hamburg 1.1
+V3 Cologne 4.6
+V4 Cologne 3.5
+V5 Dusseldorf 5.6
