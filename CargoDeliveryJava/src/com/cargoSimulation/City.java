@@ -3,7 +3,7 @@ package com.cargoSimulation;
 public class City {
 	private String name;
 	private DistributionCenter distributionCenter;
-	public City(String name, DistributionCenter distributionCenter) {
+	public City(String name) {
 		super();
 		this.name = name;
 		this.distributionCenter = new DistributionCenter ();

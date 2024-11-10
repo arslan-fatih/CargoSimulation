@@ -1,17 +1,17 @@
 package com.cargoSimulation;
 
-public class Stack<T> {
+public class MyQueue<T> {
     private DoublyLinkedList<T> list;
 
-    public Stack() {
+    public MyQueue() {
         list = new DoublyLinkedList<>();
     }
 
-    public void push(T item) {
-        list.addFirst(item);
+    public void enqueue(T item) {
+        list.addLast(item);
     }
 
-    public T pop() {
+    public T dequeue() {
         return list.removeFirst();
     }
 
@@ -29,5 +29,7 @@ public class Stack<T> {
 
     public java.util.Iterator<T> iterator() {
         return list.iterator();
-    }
+        
+    };
+        
 }
