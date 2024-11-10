@@ -1,0 +1,18 @@
+Berlin:
+  Vehicles: V1 
+  Packages: P4 P1 
+Hamburg:
+  Vehicles: V2 
+  Packages: P9 P8 P5 P2 
+Cologne:
+  Vehicles: V3 V4 
+  Packages: P7 P6 P3 
+Frankfurt:
+  Vehicles: 
+  Packages: P10 
+Dusseldorf:
+  Vehicles: V5 
+  Packages: P13 P12 P11 
+Stuttgart:
+  Vehicles: 
+  Packages: 
